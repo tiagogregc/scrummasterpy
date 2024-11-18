@@ -36,11 +36,17 @@
     <div class="modal show">
         <div class="modal-content">
             <h4>Confirmar Exclusão</h4>
+            {% if erro_exclusao %}
+            <p><strong>Exclusão não permitida!</strong></p>
+            <p>Pessoa está atuando em um projeto.</p>
+            <a href="{{ url_for('listar_pessoas') }}" class="btn btn-primary" style="margin-top: 10px;">Ok</a>
+            {% else %}
             <p>Tem certeza que deseja excluir a pessoa <strong>{{ pessoa_nome }}</strong>?</p>
             <form method="POST">
                 <button type="submit" class="btn btn-danger">Sim, excluir</button>
             </form>
             <a href="{{ url_for('listar_pessoas') }}" class="btn btn-primary" style="margin-left: 10px;">Cancelar</a>
+            {% endif %}
         </div>
     </div>
     {% endif %}

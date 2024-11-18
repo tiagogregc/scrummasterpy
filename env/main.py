@@ -64,14 +64,31 @@ def confirmar_exclusao_pessoa(id):
 
     # Buscar o nome da pessoa para exibir na modal
     cursor.execute("SELECT nome FROM pessoas WHERE id=%s", (id,))
-    pessoas = cursor.fetchone()
+    pessoa = cursor.fetchone()
 
-    if not pessoas:
+    if not pessoa:
         db.close()
         return redirect(url_for('listar_pessoas'))
 
-    pessoas_nome = pessoas[0]
+    pessoa_nome = pessoa[0]
     
+    # Verificar se a pessoa está associada a algum projeto na tabela tb_projetos
+    cursor.execute("""
+        SELECT COUNT(*) 
+        FROM tb_projetos 
+        WHERE product_owner=%s OR scrum_master=%s
+    """, (id, id))
+    projeto_associado = cursor.fetchone()[0]
+
+    # Verificar se a pessoa está associada a algum projeto na tabela tb_projeto_equipe
+    cursor.execute("SELECT COUNT(*) FROM tb_projeto_equipe WHERE pessoa_id=%s", (id,))
+    projeto_equipe_associado = cursor.fetchone()[0]
+
+    # Se a pessoa estiver associada a qualquer uma das tabelas, impedir a exclusão e exibir mensagem
+    if projeto_associado > 0 or projeto_equipe_associado > 0:
+        db.close()
+        return render_template('listar_pessoas.html', pessoa_id_excluir=id, pessoa_nome=pessoa_nome, erro_exclusao=True)
+
     # Verificar se a requisição é POST (excluir)
     if request.method == 'POST':
         cursor.execute("DELETE FROM pessoas WHERE id=%s", (id,))
@@ -80,7 +97,7 @@ def confirmar_exclusao_pessoa(id):
         return redirect(url_for('listar_pessoas'))
 
     db.close()
-    return render_template('listar_pessoas.html', pessoa_id_excluir=id, pessoa_nome=pessoas_nome)
+    return render_template('listar_pessoas.html', pessoa_id_excluir=id, pessoa_nome=pessoa_nome)
 
 ########### Rotas para projetos
 @app.route('/projetos')
