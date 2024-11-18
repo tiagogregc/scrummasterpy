@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request, redirect, url_for
 import mysql.connector
+from datetime import datetime
 
 app = Flask(__name__)
 
@@ -238,15 +239,25 @@ def confirmar_exclusao_projeto(id):
 def listar_backlogs():
     db = get_db_connection()
     cursor = db.cursor()
-    
+
+    # Buscar todos os backlogs com informações de projeto e scrum master
     cursor.execute("""
-        SELECT b.projeto_id, b.backlog_codigo, b.nome_backlog, b.descricao, b.prazo, b.situacao,
-               p.nome_projeto
+        SELECT b.projeto_id, b.backlog_codigo, b.nome_backlog, b.prazo, b.situacao,
+               p.nome_projeto, b.descricao, po.nome AS scrum_master_nome
         FROM Tb_backlogs b
         JOIN Tb_projetos p ON b.projeto_id = p.id
+        LEFT JOIN pessoas po ON p.scrum_master = po.id
     """)
 
     backlogs = cursor.fetchall()
+
+    # Formatar a data para o formato brasileiro (dd/mm/aaaa)
+    for index, backlog in enumerate(backlogs):
+        # Formatando o campo de data 'b.prazo' (índice 3 na tupla)
+        prazo_original = backlog[3]
+        if prazo_original:
+            # Se 'prazo' for um objeto datetime.date
+            backlogs[index] = backlog[:3] + (prazo_original.strftime('%d/%m/%Y'),) + backlog[4:]
 
     db.close()
     return render_template('listar_backlogs.html', backlogs=backlogs)
@@ -265,7 +276,6 @@ def cadastrar_backlog():
     prazo = ""
     situacao = "A iniciar"  # Valor padrão para situação
 
-    # Verificar se a requisição é POST (salvando os dados)
     if request.method == 'POST':
         projeto_id = request.form['projeto_id']
         nome_backlog = request.form['nome_backlog']
@@ -273,11 +283,19 @@ def cadastrar_backlog():
         prazo = request.form['prazo']
         situacao = request.form['situacao']
 
-        # Agora podemos salvar o backlog no banco de dados
+        # Obter o próximo valor de backlog_id para o projeto
         cursor.execute("""
-            INSERT INTO Tb_backlogs (projeto_id, nome_backlog, descricao, prazo, situacao)
-            VALUES (%s, %s, %s, %s, %s)
-        """, (projeto_id, nome_backlog, descricao, prazo, situacao))
+            SELECT COALESCE(MAX(backlog_codigo), 0) + 1
+            FROM Tb_backlogs
+            WHERE projeto_id = %s
+        """, (projeto_id,))
+        novo_backlog_id = cursor.fetchone()[0]
+
+        # Inserir o novo backlog
+        cursor.execute("""
+            INSERT INTO Tb_backlogs (projeto_id, backlog_codigo, nome_backlog, descricao, prazo, situacao)
+            VALUES (%s, %s, %s, %s, %s, %s)
+        """, (projeto_id, novo_backlog_id, nome_backlog, descricao, prazo, situacao))
         db.commit()
 
         db.close()
@@ -285,8 +303,7 @@ def cadastrar_backlog():
 
     db.close()
 
-    # Passar os dados para o template
-    return render_template('cadastrar_backlog.html', projetos=projetos, 
+    return render_template('cadastrar_backlog.html', projetos=projetos,
                            nome_backlog=nome_backlog, descricao=descricao, prazo=prazo, situacao=situacao)
 
 @app.route('/backlogs/editar/<int:projeto_id>/<int:backlog_codigo>', methods=['GET', 'POST'])
@@ -312,7 +329,7 @@ def editar_backlog(projeto_id, backlog_codigo):
 
         return redirect(url_for('listar_backlogs'))
 
-    # Buscar os dados do backlog e do projeto (sem incluir o Scrum Master)
+    # Buscar os dados do backlog e do projeto
     cursor.execute("""
         SELECT b.backlog_codigo, b.nome_backlog, b.descricao, b.prazo, b.situacao, p.nome_projeto
         FROM Tb_backlogs b
@@ -324,7 +341,8 @@ def editar_backlog(projeto_id, backlog_codigo):
 
     db.close()
 
-    return render_template('editar_backlogs.html', backlog=backlog)
+    # Passar projeto_id, backlog_codigo e backlog para o template
+    return render_template('editar_backlogs.html', projeto_id=projeto_id, backlog_codigo=backlog_codigo, backlog=backlog)
 
 @app.route('/backlogs/confirmar_exclusao/<int:projeto_id>/<int:backlog_codigo>', methods=['GET', 'POST'])
 def confirmar_exclusao_backlog(projeto_id, backlog_codigo):

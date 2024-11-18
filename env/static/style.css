@@ -314,3 +314,86 @@ main {
 .modal.show {
     display: flex;
 }
+
+/* Ajustando a largura da coluna de ID */
+table td:first-child,
+table th:first-child {
+    width: 100px;  /* Define largura fixa para o ID */
+    text-align: center;  /* Centraliza o conteúdo */
+}
+
+/* Ajustando a largura da coluna de data */
+table td:nth-child(5),
+table th:nth-child(5) {
+    width: 120px;  /* Define largura fixa para a data */
+}
+
+/* Garantindo que os botões Editar e Excluir tenham o mesmo tamanho */
+table td a.btn {
+    width: 100px;  /* Define largura fixa para os botões */
+    display: inline-block;  /* Garante que os botões fiquem no mesmo nível */
+    text-align: center;  /* Centraliza o texto no botão */
+    margin-right: 5px;  /* Espaço entre os botões */
+}
+
+/* Estilo para as datas formatadas */
+table td:nth-child(5) {
+    width: 120px;
+    text-align: center; /* Centraliza a data */
+}
+
+/* Estilo para a coluna de "Projeto" */
+table td:nth-child(2) {
+    text-align: left;
+    padding-left: 15px; /* Adiciona espaçamento à esquerda */
+}
+
+/* Ajuste do formato de data no template */
+table td:nth-child(5) {
+    width: 120px;  /* Largura fixa para a coluna de data */
+    text-align: center; /* Centraliza a data */
+}
+
+/* Estilo específico para a página de listagem de backlogs */
+.container-listagem {
+    max-width: 1200px;  /* Largura maior para comportar a tabela sem exceder */
+    margin: 20px auto;
+    background-color: #fff;
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Ajustando a largura da coluna ID (8 caracteres) */
+table td:nth-child(2), /* Coluna ID */
+table th:nth-child(2) {
+    width: 100px;  /* Ajuste para garantir que 8 caracteres caibam sem quebra */
+    text-align: center; /* Centraliza o conteúdo */
+    white-space: nowrap; /* Impede quebra de linha */
+}
+
+/* Ajustando a largura da coluna Descrição de Backlog */
+table td:nth-child(4),
+table th:nth-child(4) {
+    width: 400px; /* Ajuste maior para acomodar mais texto */
+    word-wrap: break-word;  /* Garante que o texto quebre a linha ao atingir o limite */
+    overflow: visible; /* Garante que o texto não seja cortado */
+    white-space: normal; /* Permite que o texto quebre a linha quando necessário */
+}
+
+/* Ajustando a largura da coluna Data */
+table td:nth-child(6),
+table th:nth-child(6) {
+    width: 150px;  /* Ajusta para acomodar a data */
+    text-align: center; /* Centraliza a data */
+    white-space: nowrap;  /* Impede quebra de linha */
+}
+
+/* Título da página */
+h1 {
+    text-align: center;
+    margin-top: 40px;
+    font-size: 2rem;
+    color: #444;
+    font-weight: bold;
+}

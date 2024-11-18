@@ -3,7 +3,8 @@
 {% block title %}Listar Backlogs{% endblock %}
 
 {% block content %}
-    <div class="container">
+    <div class="container-listagem">
+        <!-- Título centralizado -->
         <h1>Backlogs</h1>
         
         <!-- Botão para cadastrar novo backlog -->
@@ -12,20 +13,26 @@
         <table class="table">
             <thead>
                 <tr>
+                    <th>Projeto</th>
                     <th>ID</th>
                     <th>Nome do Backlog</th>
+                    <th>Descrição do Backlog</th>
                     <th>Scrum Master</th>
                     <th>Situação</th>
+                    <th>Prazo</th>
                     <th>Ações</th>
                 </tr>
             </thead>
             <tbody>
                 {% for backlog in backlogs %}
                 <tr>
+                    <td>{{ backlog[5] }}</td>
                     <td>{{ backlog[0] }}-{{ backlog[1] }}</td>
                     <td>{{ backlog[2] }}</td>
-                    <td>{{ backlog[3] }}</td>
+                    <td>{{ backlog[6] }}</td>
+                    <td>{{ backlog[7] }}</td>
                     <td>{{ backlog[4] }}</td>
+                    <td>{{ backlog[3] }}</td>
                     <td>
                         <a href="{{ url_for('editar_backlog', projeto_id=backlog[0], backlog_codigo=backlog[1]) }}" class="btn">Editar</a>
                         <a href="{{ url_for('confirmar_exclusao_backlog', projeto_id=backlog[0], backlog_codigo=backlog[1]) }}" class="btn" style="background-color: #d9534f;">Excluir</a>

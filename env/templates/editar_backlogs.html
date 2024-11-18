@@ -3,33 +3,41 @@
 {% block title %}Editar Backlog{% endblock %}
 
 {% block content %}
-    <div class="container">
-        <h1>Editar Backlog</h1>
-        <form action="{{ url_for('editar_backlog', projeto_id=projeto_id, backlog_codigo=backlog_codigo) }}" method="post">
-            <div class="form-group">
-                <label for="nome_backlog">Nome do Backlog</label>
-                <input type="text" id="nome_backlog" name="nome_backlog" value="{{ backlog.nome_backlog }}" required>
-            </div>
+<div class="container">
+    <h1>Editar Backlog</h1>
+    <form action="{{ url_for('editar_backlog', projeto_id=projeto_id, backlog_codigo=backlog_codigo) }}" method="post">
+        <div class="form-group">
+            <label for="nome_backlog">Nome do Backlog</label>
+            <input type="text" id="nome_backlog" name="nome_backlog" value="{{ backlog[1] }}" required class="form-control">
+        </div>
 
-            <div class="form-group">
-                <label for="situacao">Situação do Backlog</label>
-                <select name="situacao" id="situacao" required>
-                    <option value="A iniciar" {% if backlog.situacao == 'A iniciar' %}selected{% endif %}>A iniciar</option>
-                    <option value="Em execução" {% if backlog.situacao == 'Em execução' %}selected{% endif %}>Em execução</option>
-                    <option value="Finalizado" {% if backlog.situacao == 'Finalizado' %}selected{% endif %}>Finalizado</option>
-                </select>
-            </div>
+        <div class="form-group">
+            <label for="descricao">Descrição</label>
+            <textarea id="descricao" name="descricao" required class="form-control">{{ backlog[2] }}</textarea>
+        </div>
 
-            <div class="form-group">
-                <label for="prazo">Prazo</label>
-                <input type="date" id="prazo" name="prazo" value="{{ backlog.prazo }}" required>
-            </div>
+        <div class="form-group">
+            <label for="prazo">Prazo</label>
+            <input type="date" id="prazo" name="prazo" value="{{ backlog[3] }}" required class="form-control">
+        </div>
 
-            <!-- Scrum Master (campo removido) -->
-            <!-- A seção do Scrum Master foi retirada. -->
+        <div class="form-group">
+            <label for="situacao">Situação</label>
+            <select name="situacao" id="situacao" required class="form-control">
+                <option value="A iniciar" {% if backlog[4] == 'A iniciar' %}selected{% endif %}>A iniciar</option>
+                <option value="Em execução" {% if backlog[4] == 'Em execução' %}selected{% endif %}>Em execução</option>
+                <option value="Finalizado" {% if backlog[4] == 'Finalizado' %}selected{% endif %}>Finalizado</option>
+            </select>
+        </div>
 
-            <button type="submit" class="btn btn-primary">Salvar Alterações</button>
-            <a href="{{ url_for('listar_backlogs') }}" class="btn btn-secondary">Cancelar</a>
-        </form>
-    </div>
+        <!-- Apenas visualização do nome do projeto -->
+        <div class="form-group">
+            <label for="nome_projeto">Projeto</label>
+            <input type="text" id="nome_projeto" value="{{ backlog[5] }}" readonly class="form-control">
+        </div>
+
+        <button type="submit" class="btn btn-primary">Salvar Alterações</button>
+        <a href="{{ url_for('listar_backlogs') }}" class="btn btn-secondary">Cancelar</a>
+    </form>
+</div>
 {% endblock %}
