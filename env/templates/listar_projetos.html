@@ -20,11 +20,11 @@
             <tbody>
                 {% for projeto in projetos %}
                 <tr>
-                    <td>{{ projeto.projeto_id }}</td>  <!-- Exibe o ID do projeto -->
-                    <td>{{ projeto.nome_projeto }}</td>  <!-- Exibe o nome do projeto -->
-                    <td>{{ projeto.product_owner_nome }}</td>  <!-- Exibe o nome do Product Owner -->
-                    <td>{{ projeto.scrum_master_nome }}</td>  <!-- Exibe o nome do Scrum Master -->
-                    <td>{{ projeto.equipe_nomes | join(', ') }}</td>  <!-- Exibe os nomes da equipe, separados por vírgula -->
+                    <td>{{ projeto.projeto_id }}</td>
+                    <td>{{ projeto.nome_projeto }}</td>
+                    <td>{{ projeto.product_owner_nome }}</td>
+                    <td>{{ projeto.scrum_master_nome }}</td>
+                    <td>{{ projeto.equipe_nomes | join(', ') }}</td>
                     <td>
                         <a href="{{ url_for('editar_projeto', id=projeto.projeto_id) }}" class="btn">Editar</a>
                         <a href="{{ url_for('confirmar_exclusao_projeto', id=projeto.projeto_id) }}" class="btn" style="background-color: #d9534f;">Excluir</a>
@@ -40,11 +40,17 @@
     <div class="modal show">
         <div class="modal-content">
             <h4>Confirmar Exclusão</h4>
+            {% if erro_exclusao %}
+            <p><strong>Exclusão não permitida!</strong></p>
+            <p>Projeto possui backlogs cadastrados.</p>
+            <a href="{{ url_for('listar_projetos') }}" class="btn btn-primary" style="margin-top: 10px;">Ok</a>
+            {% else %}
             <p>Tem certeza que deseja excluir o projeto <strong>{{ projeto_nome }}</strong>?</p>
             <form method="POST">
                 <button type="submit" class="btn btn-danger">Sim, excluir</button>
             </form>
             <a href="{{ url_for('listar_projetos') }}" class="btn btn-primary" style="margin-left: 10px;">Cancelar</a>
+            {% endif %}
         </div>
     </div>
     {% endif %}

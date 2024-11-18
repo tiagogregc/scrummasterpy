@@ -239,9 +239,18 @@ def confirmar_exclusao_projeto(id):
         return redirect(url_for('listar_projetos'))
 
     projeto_nome = projeto[0]
-    
+
+    # Verificar se o projeto possui backlogs
+    cursor.execute("SELECT COUNT(*) FROM Tb_backlogs WHERE projeto_id=%s", (id,))
+    backlogs_count = cursor.fetchone()[0]
+
+    erro_exclusao = False
+    if backlogs_count > 0:
+        erro_exclusao = True
+
     # Verificar se a requisição é POST (excluir)
-    if request.method == 'POST':
+    if request.method == 'POST' and not erro_exclusao:
+        # Excluir o projeto apenas se não tiver backlogs
         cursor.execute("DELETE FROM Tb_projeto_equipe WHERE projeto_id=%s", (id,))
         cursor.execute("DELETE FROM Tb_projetos WHERE id=%s", (id,))
         db.commit()
@@ -249,7 +258,7 @@ def confirmar_exclusao_projeto(id):
         return redirect(url_for('listar_projetos'))
 
     db.close()
-    return render_template('listar_projetos.html', projeto_id_excluir=id, projeto_nome=projeto_nome)
+    return render_template('listar_projetos.html', projeto_id_excluir=id, projeto_nome=projeto_nome, erro_exclusao=erro_exclusao)
 
 ########### Rotas para Backlogs
 @app.route('/backlogs')
