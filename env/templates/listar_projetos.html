@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+
+{% block title %}Listar Projetos{% endblock %}
+
+{% block content %}
+    <div class="container">
+        <h1>Projetos</h1>
+        <a href="{{ url_for('cadastrar_projeto') }}" class="btn btn-primary">Novo Projeto</a>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Nome do Projeto</th>
+                    <th>Product Owner</th>
+                    <th>Scrum Master</th>
+                    <th>Equipe</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for projeto in projetos %}
+                <tr>
+                    <td>{{ projeto.projeto_id }}</td>  <!-- Exibe o ID do projeto -->
+                    <td>{{ projeto.nome_projeto }}</td>  <!-- Exibe o nome do projeto -->
+                    <td>{{ projeto.product_owner_nome }}</td>  <!-- Exibe o nome do Product Owner -->
+                    <td>{{ projeto.scrum_master_nome }}</td>  <!-- Exibe o nome do Scrum Master -->
+                    <td>{{ projeto.equipe_nomes | join(', ') }}</td>  <!-- Exibe os nomes da equipe, separados por vírgula -->
+                    <td>
+                        <a href="{{ url_for('editar_projeto', id=projeto.projeto_id) }}" class="btn">Editar</a>
+                        <a href="{{ url_for('confirmar_exclusao_projeto', id=projeto.projeto_id) }}" class="btn" style="background-color: #d9534f;">Excluir</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Modal de confirmação de exclusão -->
+    {% if projeto_id_excluir %}
+    <div class="modal show">
+        <div class="modal-content">
+            <h4>Confirmar Exclusão</h4>
+            <p>Tem certeza que deseja excluir o projeto <strong>{{ projeto_nome }}</strong>?</p>
+            <form method="POST">
+                <button type="submit" class="btn btn-danger">Sim, excluir</button>
+            </form>
+            <a href="{{ url_for('listar_projetos') }}" class="btn btn-primary" style="margin-left: 10px;">Cancelar</a>
+        </div>
+    </div>
+    {% endif %}
+{% endblock %}

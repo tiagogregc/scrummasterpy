@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+
+{% block title %}Listar Pessoas{% endblock %}
+
+{% block content %}
+    <div class="container">
+        <h1>Pessoas</h1>
+        <a href="{{ url_for('cadastrar_pessoa') }}" class="btn btn-primary">Nova Pessoa</a>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Nome</th>
+                    <th>Cargo</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for pessoa in pessoas %}
+                <tr>
+                    <td>{{ pessoa[0] }}</td>
+                    <td>{{ pessoa[1] }}</td>
+                    <td>{{ pessoa[2] }}</td>
+                    <td>
+                        <a href="{{ url_for('editar_pessoa', id=pessoa[0]) }}" class="btn">Editar</a>
+                        <a href="{{ url_for('confirmar_exclusao_pessoa', id=pessoa[0]) }}" class="btn" style="background-color: #d9534f;">Excluir</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Modal de confirmação de exclusão -->
+    {% if pessoa_id_excluir %}
+    <div class="modal show">
+        <div class="modal-content">
+            <h4>Confirmar Exclusão</h4>
+            <p>Tem certeza que deseja excluir a pessoa <strong>{{ pessoa_nome }}</strong>?</p>
+            <form method="POST">
+                <button type="submit" class="btn btn-danger">Sim, excluir</button>
+            </form>
+            <a href="{{ url_for('listar_pessoas') }}" class="btn btn-primary" style="margin-left: 10px;">Cancelar</a>
+        </div>
+    </div>
+    {% endif %}
+{% endblock %}

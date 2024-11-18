@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+
+{% block title %}Sobre - SCRUM Backlog Management{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1>Sobre o SCRUM Backlog Management</h1>
+
+    <div class="feature">
+        <h2>Gerenciamento de Backlogs</h2>
+        <p>Esta funcionalidade permite que você crie e gerencie backlogs de projetos. Você pode listar todos os backlogs existentes, visualizar os itens associados e adicionar novos itens conforme necessário.</p>
+        <ul>
+            <li><a href="/">Visualizar Backlogs</a></li>
+            <li><a href="/">Criar Novo Backlog</a></li>
+        </ul>
+    </div>
+
+    <div class="feature">
+        <h2>Cadastro de Projetos</h2>
+        <p>Você pode cadastrar novos projetos e associá-los a backlogs existentes. Além disso, o sistema calcula o percentual de conclusão com base nos itens de backlog completados.</p>
+        <ul>
+            <li><a href="{{ url_for('cadastrar_projeto') }}">Criar Novo Projeto</a></li>
+        </ul>
+    </div>
+
+    <div class="feature">
+        <h2>Cadastro de Pessoas Responsáveis</h2>
+        <p>O sistema permite o cadastro de pessoas responsáveis pela execução das tarefas. Cada pessoa é identificada por matrícula, nome e cargo.</p>
+        <ul>
+            <li><a href="{{ url_for('cadastrar_pessoa') }}">Cadastrar Nova Pessoa</a></li>
+        </ul>
+    </div>
+</div>
+{% endblock %}

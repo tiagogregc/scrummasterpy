@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+
+{% block title %}Editar Projeto{% endblock %}
+
+{% block content %}
+    <div class="container">
+        <h1>Editar Projeto</h1>
+        <form method="POST">
+            <div class="form-group">
+                <label for="nome_projeto">Nome do Projeto</label>
+                <input type="text" class="form-control" id="nome_projeto" name="nome_projeto" value="{{ projeto.nome_projeto }}" required>
+            </div>
+
+            <div class="form-group">
+                <label for="product_owner">Product Owner</label>
+                <select class="form-control" id="product_owner" name="product_owner" required>
+                    <option value="">Selecione</option>
+                    {% for pessoa in pessoas %}
+                        <option value="{{ pessoa.id }}" {% if pessoa.id == projeto.product_owner %}selected{% endif %}>{{ pessoa.nome }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="scrum_master">Scrum Master</label>
+                <select class="form-control" id="scrum_master" name="scrum_master" required>
+                    <option value="">Selecione</option>
+                    {% for pessoa in pessoas %}
+                        <option value="{{ pessoa.id }}" {% if pessoa.id == projeto.scrum_master %}selected{% endif %}>{{ pessoa.nome }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="equipe">Equipe</label>
+                <select multiple class="form-control" id="equipe" name="equipe" required>
+                    {% for pessoa in pessoas %}
+                        <option value="{{ pessoa.id }}" {% if pessoa.id in equipe_ids %}selected{% endif %}>{{ pessoa.nome }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <button type="submit" class="btn btn-primary">Salvar</button>
+            <a href="{{ url_for('listar_projetos') }}" class="btn btn-secondary">Cancelar</a>
+        </form>
+    </div>
+{% endblock %}

@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+
+{% block title %}Novo Projeto{% endblock %}
+
+{% block content %}
+    <div class="container">
+        <h1>Cadastrar Novo Projeto</h1>
+        <form action="{{ url_for('cadastrar_projeto') }}" method="post">
+            <div class="form-group">
+                <label for="nome_projeto">Nome do Projeto</label>
+                <input type="text" id="nome_projeto" name="nome_projeto" required>
+            </div>
+
+            <div class="form-group">
+                <label for="product_owner">Product Owner</label>
+                <select name="product_owner" id="product_owner" required>
+                    <option value="">Selecione o Product Owner</option>
+                    {% for pessoa in pessoas %}
+                        <option value="{{ pessoa[0] }}">{{ pessoa[1] }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="scrum_master">Scrum Master</label>
+                <select name="scrum_master" id="scrum_master" required>
+                    <option value="">Selecione o Scrum Master</option>
+                    {% for pessoa in pessoas %}
+                        <option value="{{ pessoa[0] }}">{{ pessoa[1] }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="equipe">Equipe</label>
+                <select name="equipe" id="equipe" multiple required>
+                    {% for pessoa in pessoas %}
+                        <option value="{{ pessoa[0] }}">{{ pessoa[1] }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <button type="submit" class="btn btn-primary">Salvar</button>
+            <a href="{{ url_for('listar_projetos') }}" class="btn btn-secondary">Cancelar</a>
+        </form>
+    </div>
+{% endblock %}
