@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+
+{% block title %}Cadastrar Backlog{% endblock %}
+
+{% block content %}
+    <div class="container mt-4">
+        <h1>Cadastrar Novo Backlog</h1>
+        <form action="{{ url_for('cadastrar_backlog') }}" method="POST">
+            <div class="form-group">
+                <label for="projeto_id">Projeto</label>
+                <select name="projeto_id" id="projeto_id" class="form-control" required>
+                    <option value="">Selecione um Projeto</option>
+                    {% for projeto in projetos %}
+                        <option value="{{ projeto[0] }}">{{ projeto[1] }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="nome_backlog">Nome do Backlog</label>
+                <input type="text" id="nome_backlog" name="nome_backlog" class="form-control" value="{{ nome_backlog }}" required>
+            </div>
+
+            <div class="form-group">
+                <label for="descricao">Descrição</label>
+                <textarea id="descricao" name="descricao" class="form-control" required>{{ descricao }}</textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="prazo">Prazo</label>
+                <input type="date" id="prazo" name="prazo" class="form-control" value="{{ prazo }}" required>
+            </div>
+
+            <div class="form-group">
+                <label for="situacao">Situação</label>
+                <select name="situacao" id="situacao" class="form-control" required>
+                    <option value="A iniciar" {% if situacao == "A iniciar" %}selected{% endif %}>A iniciar</option>
+                    <option value="Em execução" {% if situacao == "Em execução" %}selected{% endif %}>Em execução</option>
+                    <option value="Finalizado" {% if situacao == "Finalizado" %}selected{% endif %}>Finalizado</option>
+                </select>
+            </div>
+
+            <button type="submit" class="btn btn-primary mt-3">Salvar</button>
+        </form>
+    </div>
+{% endblock %}

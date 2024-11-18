@@ -238,19 +238,123 @@ def confirmar_exclusao_projeto(id):
 def listar_backlogs():
     db = get_db_connection()
     cursor = db.cursor()
-
+    
     cursor.execute("""
-        SELECT b.projeto_id, b.backlog_codigo, b.nome_backlog, b.scrum_master_id,
-               p.nome AS scrum_master_nome, b.descricao, b.prazo, b.situacao
+        SELECT b.projeto_id, b.backlog_codigo, b.nome_backlog, b.descricao, b.prazo, b.situacao,
+               p.nome_projeto
         FROM Tb_backlogs b
-        LEFT JOIN pessoas p ON b.scrum_master_id = p.id
-        ORDER BY b.projeto_id, b.backlog_codigo
+        JOIN Tb_projetos p ON b.projeto_id = p.id
     """)
-    
+
     backlogs = cursor.fetchall()
+
     db.close()
-    
     return render_template('listar_backlogs.html', backlogs=backlogs)
+
+@app.route('/backlogs/cadastrar', methods=['GET', 'POST'])
+def cadastrar_backlog():
+    db = get_db_connection()
+    cursor = db.cursor()
+
+    # Obter todos os projetos para exibir no formulário
+    cursor.execute("SELECT id, nome_projeto FROM Tb_projetos")
+    projetos = cursor.fetchall()
+
+    nome_backlog = ""
+    descricao = ""
+    prazo = ""
+    situacao = "A iniciar"  # Valor padrão para situação
+
+    # Verificar se a requisição é POST (salvando os dados)
+    if request.method == 'POST':
+        projeto_id = request.form['projeto_id']
+        nome_backlog = request.form['nome_backlog']
+        descricao = request.form['descricao']
+        prazo = request.form['prazo']
+        situacao = request.form['situacao']
+
+        # Agora podemos salvar o backlog no banco de dados
+        cursor.execute("""
+            INSERT INTO Tb_backlogs (projeto_id, nome_backlog, descricao, prazo, situacao)
+            VALUES (%s, %s, %s, %s, %s)
+        """, (projeto_id, nome_backlog, descricao, prazo, situacao))
+        db.commit()
+
+        db.close()
+        return redirect(url_for('listar_backlogs'))
+
+    db.close()
+
+    # Passar os dados para o template
+    return render_template('cadastrar_backlog.html', projetos=projetos, 
+                           nome_backlog=nome_backlog, descricao=descricao, prazo=prazo, situacao=situacao)
+
+@app.route('/backlogs/editar/<int:projeto_id>/<int:backlog_codigo>', methods=['GET', 'POST'])
+def editar_backlog(projeto_id, backlog_codigo):
+    db = get_db_connection()
+    cursor = db.cursor()
+
+    if request.method == 'POST':
+        nome_backlog = request.form['nome_backlog']
+        descricao = request.form['descricao']
+        prazo = request.form['prazo']
+        situacao = request.form['situacao']
+
+        # Atualizar os dados do backlog
+        cursor.execute("""
+            UPDATE Tb_backlogs
+            SET nome_backlog = %s, descricao = %s, prazo = %s, situacao = %s
+            WHERE projeto_id = %s AND backlog_codigo = %s
+        """, (nome_backlog, descricao, prazo, situacao, projeto_id, backlog_codigo))
+
+        db.commit()
+        db.close()
+
+        return redirect(url_for('listar_backlogs'))
+
+    # Buscar os dados do backlog e do projeto (sem incluir o Scrum Master)
+    cursor.execute("""
+        SELECT b.backlog_codigo, b.nome_backlog, b.descricao, b.prazo, b.situacao, p.nome_projeto
+        FROM Tb_backlogs b
+        JOIN Tb_projetos p ON b.projeto_id = p.id
+        WHERE b.projeto_id = %s AND b.backlog_codigo = %s
+    """, (projeto_id, backlog_codigo))
+
+    backlog = cursor.fetchone()
+
+    db.close()
+
+    return render_template('editar_backlogs.html', backlog=backlog)
+
+@app.route('/backlogs/confirmar_exclusao/<int:projeto_id>/<int:backlog_codigo>', methods=['GET', 'POST'])
+def confirmar_exclusao_backlog(projeto_id, backlog_codigo):
+    db = get_db_connection()
+    cursor = db.cursor()
+
+    # Buscar o nome do backlog para exibir na modal (sem considerar o Scrum Master)
+    cursor.execute("""
+        SELECT nome_backlog FROM Tb_backlogs WHERE projeto_id = %s AND backlog_codigo = %s
+    """, (projeto_id, backlog_codigo))
+    backlog = cursor.fetchone()
+
+    if not backlog:
+        db.close()
+        return redirect(url_for('listar_backlogs'))
+
+    backlog_nome = backlog[0]
+
+    # Verificar se a requisição é POST (excluir)
+    if request.method == 'POST':
+        cursor.execute("""
+            DELETE FROM Tb_backlogs WHERE projeto_id = %s AND backlog_codigo = %s
+        """, (projeto_id, backlog_codigo))
+        db.commit()
+        db.close()
+        return redirect(url_for('listar_backlogs'))
+
+    db.close()
+
+    return render_template('listar_backlogs.html', backlog_id_excluir=(projeto_id, backlog_codigo), backlog_nome=backlog_nome)
 
 if __name__ == '__main__':
     app.run(debug=True)

@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+
+{% block title %}Listar Backlogs{% endblock %}
+
+{% block content %}
+    <div class="container">
+        <h1>Backlogs</h1>
+        
+        <!-- Botão para cadastrar novo backlog -->
+        <a href="{{ url_for('cadastrar_backlog') }}" class="btn btn-primary">Cadastrar Novo Backlog</a>
+
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Nome do Backlog</th>
+                    <th>Scrum Master</th>
+                    <th>Situação</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for backlog in backlogs %}
+                <tr>
+                    <td>{{ backlog[0] }}-{{ backlog[1] }}</td>
+                    <td>{{ backlog[2] }}</td>
+                    <td>{{ backlog[3] }}</td>
+                    <td>{{ backlog[4] }}</td>
+                    <td>
+                        <a href="{{ url_for('editar_backlog', projeto_id=backlog[0], backlog_codigo=backlog[1]) }}" class="btn">Editar</a>
+                        <a href="{{ url_for('confirmar_exclusao_backlog', projeto_id=backlog[0], backlog_codigo=backlog[1]) }}" class="btn" style="background-color: #d9534f;">Excluir</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Modal de confirmação de exclusão -->
+    {% if backlog_id_excluir %}
+    <div class="modal show">
+        <div class="modal-content">
+            <h4>Confirmar Exclusão</h4>
+            <p>Tem certeza que deseja excluir o backlog <strong>{{ backlog_nome }}</strong>?</p>
+            <form method="POST">
+                <button type="submit" class="btn btn-danger">Sim, excluir</button>
+            </form>
+            <a href="{{ url_for('listar_backlogs') }}" class="btn btn-primary" style="margin-left: 10px;">Cancelar</a>
+        </div>
+    </div>
+    {% endif %}
+{% endblock %}
